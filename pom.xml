@@ -287,7 +287,7 @@
     
     <name>junit-docker-rule</name>
     <description>JUnit Rule starting docker container in junit test case.</description>
-    <url>https://github.com/tdomzal/junit-docker-rule</url>
+    <url>https://github.com/stephenc/junit-docker-rule</url>
 
     <licenses>
         <license>
@@ -302,12 +302,16 @@
             <id>tdomzal</id>
             <name>Tomasz Domzal</name>
         </developer>
+        <developer>
+            <id>stephenc</id>
+            <name>Stephen Connolly</name>
+        </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git@github.com:tdomzal/junit-docker-rule.git</connection>
-        <developerConnection>scm:git:git@github.com:tdomzal/junit-docker-rule.git</developerConnection>
-        <url>https://github.com/tdomzal/junit-docker-rule</url>
+        <connection>scm:git:git@github.com:stephenc/junit-docker-rule.git</connection>
+        <developerConnection>scm:git:git@github.com:stephenc/junit-docker-rule.git</developerConnection>
+        <url>https://github.com/stephenc/junit-docker-rule</url>
     </scm>
 
     <distributionManagement>
