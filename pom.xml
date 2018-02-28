@@ -40,7 +40,7 @@
         <developerConnection>scm:git:git@github.com:stephenc/junit-docker-rule.git</developerConnection>
         <url>https://github.com/stephenc/junit-docker-rule</url>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
