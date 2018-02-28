@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.collect.Lists;
+import com.spotify.docker.client.shaded.com.google.common.collect.Lists;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.PortBinding;
 

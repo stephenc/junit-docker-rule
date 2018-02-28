@@ -11,7 +11,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Stopwatch;
+import com.spotify.docker.client.shaded.com.google.common.base.Stopwatch;
 
 @Category(test.category.Stable.class)
 public class DockerRuleWaitForMessageCustomTimeTest {

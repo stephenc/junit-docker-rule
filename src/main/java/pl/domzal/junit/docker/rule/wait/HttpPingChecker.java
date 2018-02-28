@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import org.apache.http.impl.client.HttpClientBuilder;
+import com.spotify.docker.client.shaded.org.apache.http.client.config.RequestConfig;
+import com.spotify.docker.client.shaded.org.apache.http.client.methods.CloseableHttpResponse;
+import com.spotify.docker.client.shaded.org.apache.http.client.methods.RequestBuilder;
+import com.spotify.docker.client.shaded.org.apache.http.impl.client.CloseableHttpClient;
+import com.spotify.docker.client.shaded.org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import com.spotify.docker.client.shaded.org.apache.http.impl.client.HttpClientBuilder;
 
 /**
  * Check whether a given URL is available

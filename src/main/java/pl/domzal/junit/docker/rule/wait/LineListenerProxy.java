@@ -2,7 +2,7 @@ package pl.domzal.junit.docker.rule.wait;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
+import com.spotify.docker.client.shaded.com.google.common.collect.Lists;
 
 /**
  * {@link LineListener} that can proxy line to set of underlying

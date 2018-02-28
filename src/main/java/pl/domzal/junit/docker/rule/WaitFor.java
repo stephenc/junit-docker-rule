@@ -5,8 +5,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-import com.google.common.primitives.Ints;
+import com.spotify.docker.client.shaded.com.google.common.collect.Lists;
+import com.spotify.docker.client.shaded.com.google.common.primitives.Ints;
 
 import pl.domzal.junit.docker.rule.wait.HttpPingChecker;
 import pl.domzal.junit.docker.rule.wait.LogChecker;
