@@ -1,13 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
 
     <groupId>io.github.stephenc.docker</groupId>
     <artifactId>junit-docker-rule</artifactId>
     <version>0.5-SNAPSHOT</version>
-
     <packaging>jar</packaging>
+
+    <name>junit-docker-rule</name>
+    <description>JUnit Rule starting docker container in junit test case.</description>
+    <url>https://github.com/stephenc/junit-docker-rule</url>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>tdomzal</id>
+            <name>Tomasz Domzal</name>
+        </developer>
+        <developer>
+            <id>stephenc</id>
+            <name>Stephen Connolly</name>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git@github.com:stephenc/junit-docker-rule.git</connection>
+        <developerConnection>scm:git:git@github.com:stephenc/junit-docker-rule.git</developerConnection>
+        <url>https://github.com/stephenc/junit-docker-rule</url>
+      <tag>HEAD</tag>
+  </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -77,52 +110,6 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <!-- Profiles activate testcase categories -->
-        <profile>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <id>tests-stable</id>
-            <properties>
-                <testcase.categories>test.category.Stable,test.category.Volumes</testcase.categories>
-            </properties>
-        </profile>
-        <profile>
-            <id>tests-unstable</id>
-            <properties>
-                <testcase.categories>test.category.Unstable</testcase.categories>
-            </properties>
-        </profile>
-        <profile>
-            <id>tests-all</id>
-            <properties>
-                <testcase.categories>test.category.Stable,test.category.Volumes,test.category.Unstable</testcase.categories>
-            </properties>
-        </profile>
-        <profile> 
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
             <plugin>
@@ -181,20 +168,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.10</version>
-                <configuration>
-                    <includeScope>compile</includeScope>
-                    <excludeScope>test</excludeScope>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>maven-version-plugin</artifactId>
-                <version>1.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
                 <version>2.10</version>
                 <configuration>
@@ -242,19 +215,6 @@
                 <version>2.5.3</version>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <version>1.6.7</version>
@@ -286,42 +246,29 @@
             </plugin>
         </plugins>
     </build>
-    
-    <name>junit-docker-rule</name>
-    <description>JUnit Rule starting docker container in junit test case.</description>
-    <url>https://github.com/stephenc/junit-docker-rule</url>
 
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <id>tdomzal</id>
-            <name>Tomasz Domzal</name>
-        </developer>
-        <developer>
-            <id>stephenc</id>
-            <name>Stephen Connolly</name>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:git@github.com:stephenc/junit-docker-rule.git</connection>
-        <developerConnection>scm:git:git@github.com:stephenc/junit-docker-rule.git</developerConnection>
-        <url>https://github.com/stephenc/junit-docker-rule</url>
-      <tag>HEAD</tag>
-  </scm>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype-nexus-staging</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
+    <profiles>
+        <!-- Profiles activate testcase categories -->
+        <profile>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <id>tests-stable</id>
+            <properties>
+                <testcase.categories>test.category.Stable,test.category.Volumes</testcase.categories>
+            </properties>
+        </profile>
+        <profile>
+            <id>tests-unstable</id>
+            <properties>
+                <testcase.categories>test.category.Unstable</testcase.categories>
+            </properties>
+        </profile>
+        <profile>
+            <id>tests-all</id>
+            <properties>
+                <testcase.categories>test.category.Stable,test.category.Volumes,test.category.Unstable</testcase.categories>
+            </properties>
+        </profile>
+    </profiles>
 </project>
