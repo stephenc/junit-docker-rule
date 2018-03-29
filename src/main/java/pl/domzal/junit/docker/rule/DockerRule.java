@@ -113,6 +113,10 @@ public class DockerRule extends ExternalResource {
         if (builder.restartPolicy() != null) {
             hostConfigBuilder.restartPolicy(builder.restartPolicy().getRestartPolicy());
         }
+        hostConfigBuilder.memory(builder.memory());
+        hostConfigBuilder.memoryReservation(builder.memoryReservation());
+        hostConfigBuilder.memorySwap(builder.memorySwap());
+        hostConfigBuilder.memorySwappiness(builder.memorySwappiness());
         HostConfig hostConfig = hostConfigBuilder
                 .extraHosts(builder.extraHosts())//
                 .build();

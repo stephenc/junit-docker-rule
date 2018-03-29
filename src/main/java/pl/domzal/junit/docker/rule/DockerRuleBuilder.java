@@ -37,6 +37,10 @@ public class DockerRuleBuilder {
     private boolean imageAlwaysPull = false;
     private PrintStream stdoutWriter;
     private PrintStream stderrWriter;
+    private Long memory;
+    private Long memoryReservation;
+    private Long memorySwap;
+    private Integer memorySwappiness;
 
     private List<StartCondition> waitConditions = new ArrayList<>();
     private int waitForSeconds = WAIT_FOR_DEFAULT_SECONDS;
@@ -495,5 +499,41 @@ public class DockerRuleBuilder {
     }
     RestartPolicy restartPolicy() {
         return restartPolicy;
+    }
+
+    public Long memory() {
+        return memory;
+    }
+
+    public DockerRuleBuilder memory(Long memory) {
+        this.memory = memory;
+        return this;
+    }
+
+    public Long memoryReservation() {
+        return memoryReservation;
+    }
+
+    public DockerRuleBuilder memoryReservation(Long memoryReservation) {
+        this.memoryReservation = memoryReservation;
+        return this;
+    }
+
+    public Long memorySwap() {
+        return memorySwap;
+    }
+
+    public DockerRuleBuilder memorySwap(Long memorySwap) {
+        this.memorySwap = memorySwap;
+        return this;
+    }
+
+    public Integer memorySwappiness() {
+        return memorySwappiness;
+    }
+
+    public DockerRuleBuilder memorySwappiness(Integer memorySwappiness) {
+        this.memorySwappiness = memorySwappiness;
+        return this;
     }
 }
