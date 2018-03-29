@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -34,7 +38,7 @@ public class DockerRuleVolumeMountTest {
     private static Logger log = LoggerFactory.getLogger(DockerRuleVolumeMountTest.class);
 
     @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
+    public TemporaryFolder tempFolder = new TemporaryFolder(baseDir());
 
     private File testDir;
     private String testDirPath;
@@ -42,6 +46,29 @@ public class DockerRuleVolumeMountTest {
     private String testFilename;
     private String testFileContent = "1234567890";
     private String testFileContentChanged = "0987654321";
+
+    private static File baseDir() {
+        String className = DockerRuleVolumeMountTest.class.getName();
+        URL url = DockerRuleVolumeMountTest.class
+                .getResource("/"+className.replace('.', '/') + ".class");
+        if (url == null) {
+            return null;
+        }
+        try {
+            Path path = Paths.get(url.toURI()).getParent(); // ClassName
+            for (int i = className.indexOf('.'); i != -1; i = className.indexOf('.', i+1)) {
+                path = path.getParent(); // packages
+            }
+            if ("test-classes".equals(path.getFileName().toString())) {
+                path = path.getParent(); //
+            } else {
+                return null;
+            }
+            return path.toFile();
+        } catch (URISyntaxException e) {
+            return null;
+        }
+    }
 
     @Before
     public void setup() throws IOException {
