@@ -3,6 +3,10 @@ package pl.domzal.junit.docker.rule.examples;
 import java.io.File;
 import java.io.IOException;
 
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -22,7 +26,30 @@ import pl.domzal.junit.docker.rule.DockerRule;
 public class ExampleVolumeMountTest {
 
     @ClassRule
-    public static TemporaryFolder tempFolder = new TemporaryFolder();
+    public static TemporaryFolder tempFolder = new TemporaryFolder(baseDir());
+
+    private static File baseDir() {
+        String className = ExampleVolumeMountTest.class.getName();
+        URL url = ExampleVolumeMountTest.class
+                .getResource("/" + className.replace('.', '/') + ".class");
+        if (url == null) {
+            return null;
+        }
+        try {
+            Path path = Paths.get(url.toURI()).getParent(); // ClassName
+            for (int i = className.indexOf('.'); i != -1; i = className.indexOf('.', i + 1)) {
+                path = path.getParent(); // packages
+            }
+            if ("test-classes".equals(path.getFileName().toString())) {
+                path = path.getParent(); //
+            } else {
+                return null;
+            }
+            return path.toFile();
+        } catch (URISyntaxException e) {
+            return null;
+        }
+    }
 
     @BeforeClass
     public static void setup() throws IOException {
