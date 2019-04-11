@@ -166,8 +166,8 @@ public class DockerRule extends ExternalResource {
                     throw e;
                 }
             } catch (Throwable e) {
+                log.warn("{} startup failed", containerShortId, e);
                 try {
-                    log.warn("{} startup failed", containerShortId, e);
                     if (dockerLogs != null) {
                         dockerLogs.close();
                     }
@@ -182,7 +182,9 @@ public class DockerRule extends ExternalResource {
                             log.info("{} stopped", containerShortId);
                         }
                     }
-                    if (builder.stopOptions().contains(StopOption.REMOVE)) {
+                    if (builder.stopOptions().contains(StopOption.INSPECTING)) {
+                        log.info("{} held for diagnostics prior to DockerRule.after()", container.id());
+                    } else if (builder.stopOptions().contains(StopOption.REMOVE)) {
                         dockerClient.removeContainer(container.id(), DockerClient.RemoveContainerParam.removeVolumes());
                         log.info("{} deleted", containerShortId);
                         container = null;
@@ -323,21 +325,23 @@ public class DockerRule extends ExternalResource {
         log.debug("after {}", containerShortId);
         try {
             dockerLogs.close();
-            ContainerState state = dockerClient.inspectContainer(container.id()).state();
-            log.debug("{} state {}", containerShortId, state);
-            if (state.running()) {
-                if (builder.stopOptions().contains(StopOption.KILL)) {
-                    dockerClient.killContainer(container.id());
-                    log.info("{} killed", containerShortId);
-                } else {
-                    dockerClient.stopContainer(container.id(), STOP_TIMEOUT);
-                    log.info("{} stopped", containerShortId);
+            if (container != null) {
+                ContainerState state = dockerClient.inspectContainer(container.id()).state();
+                log.debug("{} state {}", containerShortId, state);
+                if (state.running()) {
+                    if (builder.stopOptions().contains(StopOption.KILL)) {
+                        dockerClient.killContainer(container.id());
+                        log.info("{} killed", containerShortId);
+                    } else {
+                        dockerClient.stopContainer(container.id(), STOP_TIMEOUT);
+                        log.info("{} stopped", containerShortId);
+                    }
                 }
-            }
-            if (builder.stopOptions().contains(StopOption.REMOVE)) {
-                dockerClient.removeContainer(container.id(), DockerClient.RemoveContainerParam.removeVolumes());
-                log.info("{} deleted", containerShortId);
-                container = null;
+                if (builder.stopOptions().contains(StopOption.REMOVE)) {
+                    dockerClient.removeContainer(container.id(), DockerClient.RemoveContainerParam.removeVolumes());
+                    log.info("{} deleted", containerShortId);
+                    container = null;
+                }
             }
         } catch (DockerException | InterruptedException e) {
             throw new IllegalStateException(e);

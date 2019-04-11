@@ -28,6 +28,7 @@ public class DockerRuleWaitForMessageCustomTimeTest {
                 .cmd("sh", "-c", "for i in 01 02 03 05 06 07 08 09 10; do (echo $i; sleep 1); done")//
                 .waitFor(WaitFor.logMessage("20"))
                 .waitForTimeout(WAIT_FOR_MESSAGE_SHORTER_THAN_DEFAULT)
+                .stopOptions(StopOption.KILL, StopOption.INSPECTING, StopOption.REMOVE)
                 .build();
 
         Stopwatch stopwatch = Stopwatch.createStarted();

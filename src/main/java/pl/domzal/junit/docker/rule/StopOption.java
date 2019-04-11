@@ -2,6 +2,7 @@ package pl.domzal.junit.docker.rule;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.junit.Rule;
 
 /**
  * Container stop options. If not redefined active options are {@link #STOP}, {@link #REMOVE}.
@@ -23,7 +24,14 @@ public enum StopOption {
     /**
      * Kill at end. Opposite of {@link #STOP}.
      */
-    KILL;
+    KILL,
+    /**
+     * If the container instance fails to start in {@link DockerRule#before()} then this option will hold the
+     * container until {@link DockerRule#after()}. A less resource leaky version of {@link #KEEP}. Typical use case
+     * is where you need to access the logs if wait conditions fail and the {@link DockerRule} is not annotated with
+     * {@link Rule} (because the test will not run if the rule fails to start.
+     */
+    INSPECTING;
 
     static class StopOptionSet {
 
