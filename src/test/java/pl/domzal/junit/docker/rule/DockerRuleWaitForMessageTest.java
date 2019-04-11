@@ -5,7 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;

@@ -10,7 +10,7 @@
 
     <groupId>io.github.stephenc.docker</groupId>
     <artifactId>junit-docker-rule</artifactId>
-    <version>0.4.5-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>junit-docker-rule</name>
@@ -68,9 +68,26 @@
             <version>3.7</version>
         </dependency>
         <dependency>
-            <groupId>io.github.stephenc.docker</groupId>
-            <artifactId>docker-client-shaded</artifactId>
-            <version>8.11.1.0</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.18</version>
+        </dependency>
+        <dependency>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-client</artifactId>
+            <version>8.15.2</version>
+            <classifier>shaded</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jnr</groupId>
+            <artifactId>jnr-ffi</artifactId>
+            <version>2.1.9</version>
         </dependency>
         <!-- test scope -->
         <dependency>
