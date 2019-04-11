@@ -116,17 +116,18 @@ public class DockerRule extends ExternalResource {
         hostConfigBuilder.memorySwap(builder.memorySwap());
         hostConfigBuilder.memorySwappiness(builder.memorySwappiness());
         HostConfig hostConfig = hostConfigBuilder
-                .extraHosts(builder.extraHosts())//
+                .extraHosts(emptyToNull(builder.extraHosts()))
+                .ulimits(emptyToNull(builder.getUlimits()))
                 .build();
-        ContainerConfig containerConfig = ContainerConfig.builder()//
-                .hostConfig(hostConfig)//
-                .image(imageNameWithTag)//
-                .env(builder.env())//
-                .networkDisabled(false)//
-                .exposedPorts(builder.containerExposedPorts())
-                .entrypoint(builder.entrypoint())
-                .labels(builder.getLabels())
-                .cmd(builder.cmd()).build();
+        ContainerConfig containerConfig = ContainerConfig.builder()
+                .hostConfig(hostConfig)
+                .image(imageNameWithTag)
+                .env(emptyToNull(builder.env()))
+                .networkDisabled(false)
+                .exposedPorts(emptyToNull(builder.containerExposedPorts()))
+                .entrypoint(emptyToNull(builder.entrypoint()))
+                .labels(emptyToNull(builder.getLabels()))
+                .cmd(emptyToNull(builder.cmd())).build();
         try {
             if (StringUtils.isNotBlank(builder.name())) {
                 this.container = dockerClient.createContainer(containerConfig, builder.name());
@@ -196,6 +197,27 @@ public class DockerRule extends ExternalResource {
         } catch (DockerException | InterruptedException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private static <T> T[] emptyToNull(T[] array) {
+        if (array == null || array.length == 0) {
+            return null;
+        }
+        return array;
+    }
+
+    private static <T, C extends Collection<T>> C emptyToNull(C collection) {
+        if (collection == null || collection.isEmpty()) {
+            return null;
+        }
+        return collection;
+    }
+
+    private static <K, V, M extends Map<K,V>> M emptyToNull(M collection) {
+        if (collection == null || collection.isEmpty()) {
+            return null;
+        }
+        return collection;
     }
 
     private boolean isStarted() {
