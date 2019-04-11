@@ -10,7 +10,7 @@
 
     <groupId>io.github.stephenc.docker</groupId>
     <artifactId>junit-docker-rule</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.5.0</version>
     <packaging>jar</packaging>
 
     <name>junit-docker-rule</name>
@@ -39,7 +39,7 @@
         <connection>scm:git:git@github.com:stephenc/junit-docker-rule.git</connection>
         <developerConnection>scm:git:git@github.com:stephenc/junit-docker-rule.git</developerConnection>
         <url>https://github.com/stephenc/junit-docker-rule</url>
-      <tag>HEAD</tag>
+      <tag>junit-docker-rule-0.5.0</tag>
     </scm>
 
     <properties>
