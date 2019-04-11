@@ -1,19 +1,5 @@
 package pl.domzal.junit.docker.rule;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Rule;
-import org.junit.rules.ExternalResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.spotify.docker.client.shaded.com.google.common.collect.Lists;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.ListImagesParam;
@@ -30,7 +16,19 @@ import com.spotify.docker.client.messages.ContainerState;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.Image;
 import com.spotify.docker.client.messages.PortBinding;
-
+import com.spotify.docker.client.shaded.com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Rule;
+import org.junit.rules.ExternalResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pl.domzal.junit.docker.rule.ex.ImagePullException;
 import pl.domzal.junit.docker.rule.ex.PortNotExposedException;
 import pl.domzal.junit.docker.rule.wait.LineListener;
@@ -135,27 +133,64 @@ public class DockerRule extends ExternalResource {
             } else {
                 this.container = dockerClient.createContainer(containerConfig);
             }
+            try {
+                this.containerShortId = StringUtils.left(container.id(), SHORT_ID_LEN);
+                log.info("container {} created, id {}, short id {}", imageNameWithTag, container.id(),
+                        containerShortId);
+                log.debug("rule before {}", containerShortId);
 
-            this.containerShortId = StringUtils.left(container.id(), SHORT_ID_LEN);
-            log.info("container {} created, id {}, short id {}", imageNameWithTag, container.id(), containerShortId);
-            log.debug("rule before {}", containerShortId);
+                dockerClient.startContainer(container.id());
+                log.debug("{} started", containerShortId);
+                try {
+                    LineListenerProxy proxyLineListener = new LineListenerProxy();
+                    attachLogs(dockerClient, container.id(), proxyLineListener);
 
-            dockerClient.startContainer(container.id());
-            log.debug("{} started", containerShortId);
+                    ContainerInfo containerInfo = dockerClient.inspectContainer(container.id());
+                    containerIp = containerInfo.networkSettings().ipAddress();
+                    containerPorts = containerInfo.networkSettings().ports();
+                    containerGateway = containerInfo.networkSettings().gateway();
+                    this.containerInfo = containerInfo;
 
-            LineListenerProxy proxyLineListener = new LineListenerProxy();
-            attachLogs(dockerClient, container.id(), proxyLineListener);
+                    executeWaitForConditions(proxyLineListener);
+                    logNetworkSettings();
 
-            ContainerInfo containerInfo = dockerClient.inspectContainer(container.id());
-            containerIp = containerInfo.networkSettings().ipAddress();
-            containerPorts = containerInfo.networkSettings().ports();
-            containerGateway = containerInfo.networkSettings().gateway();
-            this.containerInfo = containerInfo;
-
-            executeWaitForConditions(proxyLineListener);
-            logNetworkSettings();
-
-            isStarted = true;
+                    isStarted = true;
+                } catch (DockerException | InterruptedException e) {
+                    log.debug("aborting start of {}", containerShortId, e);
+                    try {
+                        dockerClient.stopContainer(container.id(), 1);
+                    } catch (DockerException | InterruptedException e2) {
+                        e.addSuppressed(e2);
+                    }
+                    throw e;
+                }
+            } catch (DockerException | InterruptedException e) {
+                try {
+                    log.warn("{} startup failed", containerShortId, e);
+                    if (dockerLogs != null) {
+                        dockerLogs.close();
+                    }
+                    ContainerState state = dockerClient.inspectContainer(container.id()).state();
+                    log.debug("{} state {}", containerShortId, state);
+                    if (state.running()) {
+                        if (builder.stopOptions().contains(StopOption.KILL)) {
+                            dockerClient.killContainer(container.id());
+                            log.info("{} killed", containerShortId);
+                        } else {
+                            dockerClient.stopContainer(container.id(), STOP_TIMEOUT);
+                            log.info("{} stopped", containerShortId);
+                        }
+                    }
+                    if (builder.stopOptions().contains(StopOption.REMOVE)) {
+                        dockerClient.removeContainer(container.id(), DockerClient.RemoveContainerParam.removeVolumes());
+                        log.info("{} deleted", containerShortId);
+                        container = null;
+                    }
+                } catch (DockerException | InterruptedException e2) {
+                    e.addSuppressed(e2);
+                }
+                throw e;
+            }
         } catch (DockerRequestException e) {
             throw new IllegalStateException(e.getResponseBody(), e);
         } catch (DockerException | InterruptedException e) {

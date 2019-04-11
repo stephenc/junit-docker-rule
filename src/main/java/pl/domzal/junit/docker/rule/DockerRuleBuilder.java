@@ -1,5 +1,6 @@
 package pl.domzal.junit.docker.rule;
 
+import com.spotify.docker.client.messages.HostConfig;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.rules.RuleChain;
 
@@ -29,6 +30,7 @@ public class DockerRuleBuilder {
     private List<String> staticLinks = new ArrayList<>();
     private List<Pair<DockerRule,String>> dynamicLinks = new ArrayList<>();
     private Map<String,String> labels = new HashMap<>();
+    private List<HostConfig.Ulimit> ulimits = new ArrayList<>();
     private ExposePortBindingBuilder exposeBuilder = ExposePortBindingBuilder.builder();
     private boolean publishAllPorts = true;
     private String[] entrypoint;
@@ -487,6 +489,21 @@ public class DockerRuleBuilder {
     }
     Map<String, String> getLabels() {
         return labels;
+    }
+
+    /**
+     * Add ulimit (call multiple times to add more than one). ie, ulimit(HostConfig.Ulimit.create("nofile",
+     * (long)262144, (long)262144))
+     *
+     * @param value ulimit
+     */
+    public DockerRuleBuilder ulimit(HostConfig.Ulimit value) {
+        ulimits.add(value);
+        return this;
+    }
+
+    List<HostConfig.Ulimit> getUlimits() {
+        return ulimits;
     }
 
     /**
