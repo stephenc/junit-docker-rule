@@ -36,7 +36,7 @@ public class DockerRuleExposeTcpPortStaticTest {
     public void shouldExposeSpecifiedPort() throws Throwable {
         DockerRule sender = DockerRule.builder() //
                 .imageName("alpine:3.4") //
-                .extraHosts("serv:"+testee.getDockerContainerGateway())
+                .extraHosts("serv:"+ DockerRuleTestingHelper.exposedPortAddress(testee))
                 .cmd("sh", "-c", "echo 12345 | nc serv 4444; echo done") //
                 .waitFor(WaitFor.logMessage("done")) //
                 .build();
