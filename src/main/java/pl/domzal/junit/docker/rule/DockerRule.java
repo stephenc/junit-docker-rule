@@ -165,7 +165,7 @@ public class DockerRule extends ExternalResource {
                     }
                     throw e;
                 }
-            } catch (DockerException | InterruptedException e) {
+            } catch (Throwable e) {
                 try {
                     log.warn("{} startup failed", containerShortId, e);
                     if (dockerLogs != null) {
