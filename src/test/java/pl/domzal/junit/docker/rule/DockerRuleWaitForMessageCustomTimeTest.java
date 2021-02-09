@@ -1,6 +1,8 @@
 package pl.domzal.junit.docker.rule;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.TimeUnit;
@@ -10,8 +12,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.spotify.docker.client.shaded.com.google.common.base.Stopwatch;
 
 @Category(test.category.Stable.class)
 public class DockerRuleWaitForMessageCustomTimeTest {
@@ -24,14 +24,14 @@ public class DockerRuleWaitForMessageCustomTimeTest {
     public void shouldWaitForLogMessage() throws Throwable {
 
         DockerRule testee = DockerRule.builder()//
-                .imageName("busybox:1.25.1")//
+                .imageName("busybox:1.33.0")//
                 .cmd("sh", "-c", "for i in 01 02 03 05 06 07 08 09 10; do (echo $i; sleep 1); done")//
                 .waitFor(WaitFor.logMessage("20"))
                 .waitForTimeout(WAIT_FOR_MESSAGE_SHORTER_THAN_DEFAULT)
                 .stopOptions(StopOption.KILL, StopOption.INSPECTING, StopOption.REMOVE)
                 .build();
 
-        Stopwatch stopwatch = Stopwatch.createStarted();
+        long start = System.nanoTime();
 
         try {
             testee.before();
@@ -45,10 +45,10 @@ public class DockerRuleWaitForMessageCustomTimeTest {
             testee.after();
         }
 
-        stopwatch.stop();
-        assertTrue( //
+        long elapsed = System.nanoTime() - start;
+        assertThat( //
                 "wait time has been redifinded to shorter but container seems to be falling after default time anyway", //
-                stopwatch.elapsed(TimeUnit.SECONDS) < DockerRuleBuilder.WAIT_FOR_DEFAULT_SECONDS);
+                TimeUnit.NANOSECONDS.toSeconds(elapsed), lessThan((long)DockerRuleBuilder.WAIT_FOR_DEFAULT_SECONDS));
     }
 
 }

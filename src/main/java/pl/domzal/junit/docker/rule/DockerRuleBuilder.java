@@ -1,6 +1,6 @@
 package pl.domzal.junit.docker.rule;
 
-import com.spotify.docker.client.messages.HostConfig;
+import org.mandas.docker.client.messages.HostConfig;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.rules.RuleChain;
 
-import com.spotify.docker.client.messages.PortBinding;
+import org.mandas.docker.client.messages.PortBinding;
 
 import pl.domzal.junit.docker.rule.ex.InvalidVolumeFrom;
 import pl.domzal.junit.docker.rule.wait.StartCondition;

@@ -1,7 +1,7 @@
 package pl.domzal.junit.docker.rule.examples;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.spotify.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.exceptions.DockerException;
 
 import pl.domzal.junit.docker.rule.DockerRule;
 
@@ -21,7 +21,7 @@ public class ExamplePassEnvVariableTest {
 
     @Rule
     public DockerRule testee = DockerRule.builder()
-            .imageName("busybox:1.25.1")
+            .imageName("busybox:1.33.0")
             .env("EXTRA_OPT", "EXTRA_OPT_VALUE")
             .cmd("sh", "-c", "echo $EXTRA_OPT")
             .build();

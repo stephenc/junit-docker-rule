@@ -1,6 +1,6 @@
 package pl.domzal.junit.docker.rule.wait;
 
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;

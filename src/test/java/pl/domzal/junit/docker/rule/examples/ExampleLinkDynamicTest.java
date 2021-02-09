@@ -1,7 +1,7 @@
 package pl.domzal.junit.docker.rule.examples;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -17,12 +17,12 @@ import pl.domzal.junit.docker.rule.DockerRule;
 public class ExampleLinkDynamicTest {
 
     private static DockerRule dbRule = DockerRule.builder()
-            .imageName("alpine:3.4")
+            .imageName("alpine:3.13.1")
             .cmd("sh", "-c", "sleep 30")
             .build();
 
     private static DockerRule web = DockerRule.builder()
-            .imageName("alpine:3.4")
+            .imageName("alpine:3.13.1")
             // dynamic link takes DockerRule instance link points to and link alias
             // (no need to define container name like in static linking)
             .link(dbRule, "db")

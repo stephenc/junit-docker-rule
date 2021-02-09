@@ -23,7 +23,7 @@ public class ExamplePortExposeStaticTest {
 
     @ClassRule
     public static DockerRule testee = DockerRule.builder()
-            .imageName("nginx:1.10.2")
+            .imageName("nginx:1.19.6")
             .publishAllPorts(false) // publishAllPorts is disabled when expose(...) is used but we make it explicit here
             .expose("8123", "80")
             .build();

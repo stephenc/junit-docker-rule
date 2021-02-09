@@ -7,9 +7,9 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ContainerInfo;
-import com.spotify.docker.client.messages.NetworkSettings;
+import org.mandas.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.messages.ContainerInfo;
+import org.mandas.docker.client.messages.NetworkSettings;
 
 @Category(test.category.Unstable.class)
 public class DockerRuleExposeTcpPortStaticTest {
@@ -18,7 +18,7 @@ public class DockerRuleExposeTcpPortStaticTest {
 
     @Rule
     public DockerRule testee = DockerRule.builder() //
-            .imageName("alpine:3.4") //
+            .imageName("alpine:3.13.1") //
             .expose("4444", "4444") //
             .cmd("sh", "-c", "echo started; nc -l -p 4444") //
             .waitFor(WaitFor.logMessage("started")) //
@@ -35,7 +35,7 @@ public class DockerRuleExposeTcpPortStaticTest {
     @Test
     public void shouldExposeSpecifiedPort() throws Throwable {
         DockerRule sender = DockerRule.builder() //
-                .imageName("alpine:3.4") //
+                .imageName("alpine:3.13.1") //
                 .extraHosts("serv:"+ DockerRuleTestingHelper.exposedPortAddress(testee))
                 .cmd("sh", "-c", "echo 12345 | nc serv 4444; echo done") //
                 .waitFor(WaitFor.logMessage("done")) //

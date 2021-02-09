@@ -1,8 +1,8 @@
 package pl.domzal.junit.docker.rule.wait;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-
-import com.spotify.docker.client.shaded.com.google.common.collect.Lists;
 
 /**
  * {@link LineListener} that can proxy line to set of underlying
@@ -24,7 +24,7 @@ public class LineListenerProxy implements LineListener {
     /** Points to first empty slot in {@link #history}. */
     private int historyFirstFreeSlot = 0;
 
-    private final List<LineListener> listeners = Lists.newArrayList();
+    private final List<LineListener> listeners = new ArrayList<>();
 
     public LineListenerProxy() {
         this(DEFAULT_HISTORY_LIMIT);
@@ -32,7 +32,7 @@ public class LineListenerProxy implements LineListener {
 
     LineListenerProxy(int historyLimit) {
         this.historyLimit = historyLimit;
-        this.history = Lists.newLinkedList();
+        this.history = new LinkedList<>();
     }
 
     @Override

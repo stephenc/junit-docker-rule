@@ -1,7 +1,7 @@
 package pl.domzal.junit.docker.rule;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.concurrent.TimeoutException;
 
@@ -16,7 +16,7 @@ public class DockerRuleClassRuleInSuperclassTests {
 
     @ClassRule
     public static DockerRule testee = DockerRule.builder()//
-            .imageName("busybox:1.25.1")//
+            .imageName("busybox:1.33.0")//
             .cmd("sh", "-c", "echo 12345678")//
             .waitFor(WaitFor.logMessage("12345678"))
             .build();

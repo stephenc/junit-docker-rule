@@ -1,7 +1,7 @@
 package pl.domzal.junit.docker.rule.examples;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -19,7 +19,7 @@ public class ExampleDockerContainterTest {
     public void shouldStartAndStopContainerTwice() throws Throwable {
 
         DockerRule testee = DockerRule.builder()
-                .imageName("busybox:1.25.1")
+                .imageName("busybox:1.33.0")
                 .cmd("sh", "-c", "for i in 01 02 started 03 04 05; do (echo $i; sleep 1); done")
                 .waitFor(WaitFor.logMessage("started"))
                 .build();

@@ -24,7 +24,7 @@ public class ExampleWaitForTcpPortTest {
 
     @Rule
     public DockerRule httpd = DockerRule.builder()
-            .imageName("nginx:1.10.2")
+            .imageName("nginx:1.19.6")
             .publishAllPorts(true)
             // port we are waiting for
             .waitFor(WaitFor.tcpPort(80))

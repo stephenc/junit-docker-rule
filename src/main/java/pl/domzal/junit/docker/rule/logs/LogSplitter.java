@@ -61,7 +61,7 @@ public class LogSplitter implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         IOUtils.closeQuietly(stderrInput);
         IOUtils.closeQuietly(stdoutInput);
         IOUtils.closeQuietly(combinedInput);

@@ -1,6 +1,6 @@
 package pl.domzal.junit.docker.rule;
 
-import com.spotify.docker.client.messages.HostConfig;
+import org.mandas.docker.client.messages.HostConfig;
 
 /**
  * Container restart policy. Possible should be created with

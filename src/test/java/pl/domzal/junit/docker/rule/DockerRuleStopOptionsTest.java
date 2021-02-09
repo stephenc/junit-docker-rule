@@ -8,11 +8,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.exceptions.DockerRequestException;
-import com.spotify.docker.client.messages.Container;
-import com.spotify.docker.client.messages.ContainerInfo;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.exceptions.DockerRequestException;
+import org.mandas.docker.client.messages.Container;
+import org.mandas.docker.client.messages.ContainerInfo;
 
 @Category(test.category.Stable.class)
 public class DockerRuleStopOptionsTest {
@@ -21,7 +21,7 @@ public class DockerRuleStopOptionsTest {
     public void shouldKeepContainer() throws Throwable {
 
         DockerRule testee = DockerRule.builder()//
-                .imageName("alpine:3.4")//
+                .imageName("alpine:3.13.1")//
                 .cmd("sh", "-c", "sleep 1")//
                 .stopOptions(StopOption.KEEP)
                 .build();
@@ -41,7 +41,7 @@ public class DockerRuleStopOptionsTest {
     @Test
     public void shouldStopContainer() throws Throwable {
         DockerRule testee = DockerRule.builder()//
-                .imageName("alpine:3.4")//
+                .imageName("alpine:3.13.1")//
                 .cmd("sh", "-c", "trapinfo() { echo STOPPED; exit; }; trap \"trapinfo\" SIGTERM; for i in 01 02 03 04 05 06 07 08 09 10; do (echo $i; sleep 1); done")//
                 .stopOptions(StopOption.KEEP, StopOption.STOP)
                 .build();
@@ -61,7 +61,7 @@ public class DockerRuleStopOptionsTest {
     @Test
     public void shouldKillContainer() throws Throwable {
         DockerRule testee = DockerRule.builder()//
-                .imageName("alpine:3.4")//
+                .imageName("alpine:3.13.1")//
                 .cmd("sh", "-c", "trapinfo() { echo STOPPED; exit; }; trap \"trapinfo\" SIGTERM; for i in 01 02 03 04 05 06 07 08 09 10; do (echo $i; sleep 1); done")//
                 .stopOptions(StopOption.KEEP, StopOption.KILL)
                 .build();
@@ -93,7 +93,7 @@ public class DockerRuleStopOptionsTest {
                 dockerClient.removeContainer(containerId, DockerClient.RemoveContainerParam.removeVolumes());
             }
         } catch (DockerRequestException dockerRequestException) {
-            throw new IllegalStateException(dockerRequestException.message(), dockerRequestException);
+            throw new IllegalStateException(dockerRequestException.getMessage(), dockerRequestException);
         }
     }
 

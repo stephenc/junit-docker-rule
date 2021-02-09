@@ -1,8 +1,8 @@
 package pl.domzal.junit.docker.rule;
 
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.ContainerInfo;
-import com.spotify.docker.client.messages.NetworkSettings;
+import org.mandas.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.messages.ContainerInfo;
+import org.mandas.docker.client.messages.NetworkSettings;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +17,7 @@ public class DockerRuleExposeUdpPortStaticTest {
     
     @Rule
     public DockerRule testee = DockerRule.builder()//
-            .imageName("alpine:3.4")//
+            .imageName("alpine:3.13.1")//
             .expose("4445", "4445/udp")//
             .cmd("sh", "-c", "echo started; nc -l -u -p 4445")
             .waitFor(WaitFor.logMessage("started"))
@@ -34,7 +34,7 @@ public class DockerRuleExposeUdpPortStaticTest {
     @Test
     public void shouldExposeSpecifiedUdpPort() throws Throwable {
         DockerRule sender = DockerRule.builder()//
-                .imageName("alpine:3.4")//
+                .imageName("alpine:3.13.1")//
                 .extraHosts("serv:"+ DockerRuleTestingHelper.exposedPortAddress(testee))
                 .cmd("sh", "-c", "echo 12345 | nc -u serv 4445")//
                 .build();

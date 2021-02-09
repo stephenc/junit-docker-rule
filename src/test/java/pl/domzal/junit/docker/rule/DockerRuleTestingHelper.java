@@ -1,8 +1,8 @@
 package pl.domzal.junit.docker.rule;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.Info;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.messages.Info;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -39,6 +39,11 @@ public final class DockerRuleTestingHelper {
         if (info.operatingSystem().matches("^Docker (for Windows|for Mac|Desktop)$")) {
             // Mac and Windows do not expose the ports on the gateway, rather on the host directly
             if ("localhost".equals(client.getHost()) || "127.0.0.1".equals(client.getHost())) {
+                // prefer "primary" host address
+                final InetAddress localHost = InetAddress.getLocalHost();
+                if (localHost instanceof Inet4Address && !localHost.getHostAddress().startsWith("127.")) {
+                    return localHost.getHostAddress();
+                }
                 // need different address that can be routed
                 Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
                 while (networkInterfaces.hasMoreElements()) {

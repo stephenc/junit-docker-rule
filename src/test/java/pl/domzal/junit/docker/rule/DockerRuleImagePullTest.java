@@ -10,14 +10,14 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerClient.ListContainersParam;
-import com.spotify.docker.client.DockerClient.ListImagesParam;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.exceptions.ImageNotFoundException;
-import com.spotify.docker.client.messages.Container;
-import com.spotify.docker.client.messages.ContainerInfo;
-import com.spotify.docker.client.messages.Image;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.DockerClient.ListContainersParam;
+import org.mandas.docker.client.DockerClient.ListImagesParam;
+import org.mandas.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.exceptions.ImageNotFoundException;
+import org.mandas.docker.client.messages.Container;
+import org.mandas.docker.client.messages.ContainerInfo;
+import org.mandas.docker.client.messages.Image;
 
 import pl.domzal.junit.docker.rule.ex.ImagePullException;
 
@@ -28,7 +28,7 @@ public class DockerRuleImagePullTest {
 
     @Rule
     public DockerRule helperRule = DockerRule.builder()//
-            .imageName("busybox:1.25.1")//
+            .imageName("busybox:1.33.0")//
             .build();
 
     private DockerClient helperClient = helperRule.getDockerClient();

@@ -1,25 +1,24 @@
 package pl.domzal.junit.docker.rule;
 
-import com.spotify.docker.client.DefaultDockerClient;
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerClient.ListImagesParam;
-import com.spotify.docker.client.DockerClient.LogsParam;
-import com.spotify.docker.client.LogStream;
-import com.spotify.docker.client.exceptions.DockerCertificateException;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.exceptions.DockerRequestException;
-import com.spotify.docker.client.exceptions.ImageNotFoundException;
-import com.spotify.docker.client.messages.ContainerConfig;
-import com.spotify.docker.client.messages.ContainerCreation;
-import com.spotify.docker.client.messages.ContainerInfo;
-import com.spotify.docker.client.messages.ContainerState;
-import com.spotify.docker.client.messages.HostConfig;
-import com.spotify.docker.client.messages.Image;
-import com.spotify.docker.client.messages.PortBinding;
-import com.spotify.docker.client.shaded.com.google.common.collect.Lists;
+import org.mandas.docker.client.DefaultDockerClient;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.DockerClient.ListImagesParam;
+import org.mandas.docker.client.DockerClient.LogsParam;
+import org.mandas.docker.client.LogStream;
+import org.mandas.docker.client.builder.jersey.JerseyDockerClientBuilder;
+import org.mandas.docker.client.exceptions.DockerCertificateException;
+import org.mandas.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.exceptions.DockerRequestException;
+import org.mandas.docker.client.exceptions.ImageNotFoundException;
+import org.mandas.docker.client.messages.ContainerConfig;
+import org.mandas.docker.client.messages.ContainerCreation;
+import org.mandas.docker.client.messages.ContainerInfo;
+import org.mandas.docker.client.messages.ContainerState;
+import org.mandas.docker.client.messages.HostConfig;
+import org.mandas.docker.client.messages.Image;
+import org.mandas.docker.client.messages.PortBinding;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -76,7 +75,7 @@ public class DockerRule extends ExternalResource {
         this.builder = builder;
         this.imageNameWithTag = imageNameWithTag(builder.imageName());
         try {
-            dockerClient = DefaultDockerClient.fromEnv().build();
+            dockerClient = new JerseyDockerClientBuilder().fromEnv().build();
             log.debug("server.info: {}", dockerClient.info());
             log.debug("server.version: {}", dockerClient.version());
             if (builder.imageAlwaysPull() || ! imageAvaliable(dockerClient, imageNameWithTag)) {
@@ -115,22 +114,36 @@ public class DockerRule extends ExternalResource {
         hostConfigBuilder.memoryReservation(builder.memoryReservation());
         hostConfigBuilder.memorySwap(builder.memorySwap());
         hostConfigBuilder.memorySwappiness(builder.memorySwappiness());
-        HostConfig hostConfig = hostConfigBuilder
-                .extraHosts(emptyToNull(builder.extraHosts()))
-                .ulimits(emptyToNull(builder.getUlimits()))
-                .build();
-        ContainerConfig containerConfig = ContainerConfig.builder()
-                .hostConfig(hostConfig)
-                .image(imageNameWithTag)
-                .env(emptyToNull(builder.env()))
-                .networkDisabled(false)
-                .exposedPorts(emptyToNull(builder.containerExposedPorts()))
-                .entrypoint(emptyToNull(builder.entrypoint()))
-                .labels(emptyToNull(builder.getLabels()))
-                .cmd(emptyToNull(builder.cmd())).build();
+        if (builder.extraHosts().length > 0) {
+            hostConfigBuilder.extraHosts(builder.extraHosts());
+        }
+        if (!builder.getUlimits().isEmpty()) {
+            hostConfigBuilder.ulimits(builder.getUlimits());
+        }
+        HostConfig hostConfig = hostConfigBuilder.build();
+        ContainerConfig.Builder containerConfigBuilder = ContainerConfig.builder();
+        containerConfigBuilder.hostConfig(hostConfig)
+                .image(imageNameWithTag);
+        if (!builder.env().isEmpty()) {
+            containerConfigBuilder.env(builder.env());
+        }
+        containerConfigBuilder.networkDisabled(false);
+        if (!builder.containerExposedPorts().isEmpty()) {
+            containerConfigBuilder.exposedPorts(this.builder.containerExposedPorts());
+        }
+        if (builder.entrypoint().length > 0) {
+            containerConfigBuilder.entrypoint(this.builder.entrypoint());
+        }
+        if (!builder.getLabels().isEmpty()) {
+            containerConfigBuilder.labels(builder.getLabels());
+        }
+        if (builder.cmd().length > 0) {
+            containerConfigBuilder.cmd(this.builder.cmd());
+        }
+        ContainerConfig containerConfig = containerConfigBuilder.build();
         try {
-            if (StringUtils.isNotBlank(builder.name())) {
-                this.container = dockerClient.createContainer(containerConfig, builder.name());
+            if (StringUtils.isNotBlank(this.builder.name())) {
+                this.container = dockerClient.createContainer(containerConfig, this.builder.name());
             } else {
                 this.container = dockerClient.createContainer(containerConfig);
             }
@@ -174,7 +187,7 @@ public class DockerRule extends ExternalResource {
                     ContainerState state = dockerClient.inspectContainer(container.id()).state();
                     log.debug("{} state {}", containerShortId, state);
                     if (state.running()) {
-                        if (builder.stopOptions().contains(StopOption.KILL)) {
+                        if (this.builder.stopOptions().contains(StopOption.KILL)) {
                             dockerClient.killContainer(container.id());
                             log.info("{} killed", containerShortId);
                         } else {
@@ -182,9 +195,9 @@ public class DockerRule extends ExternalResource {
                             log.info("{} stopped", containerShortId);
                         }
                     }
-                    if (builder.stopOptions().contains(StopOption.INSPECTING)) {
+                    if (this.builder.stopOptions().contains(StopOption.INSPECTING)) {
                         log.info("{} held for diagnostics prior to DockerRule.after()", container.id());
-                    } else if (builder.stopOptions().contains(StopOption.REMOVE)) {
+                    } else if (this.builder.stopOptions().contains(StopOption.REMOVE)) {
                         dockerClient.removeContainer(container.id(), DockerClient.RemoveContainerParam.removeVolumes());
                         log.info("{} deleted", containerShortId);
                         container = null;
@@ -199,27 +212,6 @@ public class DockerRule extends ExternalResource {
         } catch (DockerException | InterruptedException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    private static <T> T[] emptyToNull(T[] array) {
-        if (array == null || array.length == 0) {
-            return null;
-        }
-        return array;
-    }
-
-    private static <T, C extends Collection<T>> C emptyToNull(C collection) {
-        if (collection == null || collection.isEmpty()) {
-            return null;
-        }
-        return collection;
-    }
-
-    private static <K, V, M extends Map<K,V>> M emptyToNull(M collection) {
-        if (collection == null || collection.isEmpty()) {
-            return null;
-        }
-        return collection;
     }
 
     private boolean isStarted() {
@@ -241,7 +233,7 @@ public class DockerRule extends ExternalResource {
     }
 
     private void executeWaitForConditions(LineListenerProxy proxyLineListener) throws TimeoutException {
-        List<StartConditionCheck> conditions = Lists.newArrayList();
+        List<StartConditionCheck> conditions = new ArrayList<>();
         for (StartCondition conditionBuilder : builder.getWaitFor()) {
             conditions.add(conditionBuilder.build(this));
         }
@@ -436,13 +428,13 @@ public class DockerRule extends ExternalResource {
      * Container log.
      */
     public String getLog() {
-        try (LogStream stream = dockerClient.logs(container.id(), LogsParam.stdout(), LogsParam.stderr());) {
+        try (LogStream stream = dockerClient.logs(container.id(), LogsParam.stdout(), LogsParam.stderr())) {
             String fullLog = stream.readFully();
             if (log.isTraceEnabled()) {
                 log.trace("{} full log: {}", containerShortId, StringUtils.replace(fullLog, "\n", "|"));
             }
             return fullLog;
-        } catch (DockerException | InterruptedException e) {
+        } catch (DockerException | InterruptedException | IOException e) {
             throw new IllegalStateException(e);
         }
 

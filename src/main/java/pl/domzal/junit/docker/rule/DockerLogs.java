@@ -9,15 +9,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.spotify.docker.client.shaded.com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerClient.LogsParam;
-import com.spotify.docker.client.LogStream;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.DockerClient.LogsParam;
+import org.mandas.docker.client.LogStream;
 
 import pl.domzal.junit.docker.rule.logs.LogPrinter;
 import pl.domzal.junit.docker.rule.logs.LogSplitter;
@@ -40,10 +39,15 @@ class DockerLogs implements Closeable {
     private PrintStream stdoutWriter = System.out;
     private PrintStream stderrWriter = System.err;
 
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder()//
-            .setNameFormat("dockerlog-pool-%d")//
-            .setDaemon(true)//
-            .build();
+    private final ThreadFactory threadFactory = new ThreadFactory() {
+        private final AtomicInteger id = new AtomicInteger(0);
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r, String.format("dockerlog-pool-%d", id.incrementAndGet()));
+            t.setDaemon(true);
+            return t;
+        }
+    };
 
     private final ExecutorService executor = Executors.newFixedThreadPool(NO_OF_THREADS, threadFactory);
 
@@ -77,11 +81,10 @@ class DockerLogs implements Closeable {
             @Override
             public Void call() throws Exception {
                 log.trace("{} attaching to logs", containerShortId);
-                LogStream logs = dockerClient.logs(containerId, LogsParam.stdout(), LogsParam.stderr(), LogsParam.follow());
-                try {
+                try (LogStream logs = dockerClient.logs(containerId, LogsParam.stdout(), LogsParam.stderr(), LogsParam.follow())) {
                     logs.attach(logSplitter.getStdoutOutput(), logSplitter.getStderrOutput());
                 } finally {
-                    IOUtils.closeQuietly(logs, logSplitter);
+                    logSplitter.close();
                     log.trace("{} dettached from logs", containerShortId);
                 }
                 return null;

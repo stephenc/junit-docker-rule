@@ -1,7 +1,7 @@
 package pl.domzal.junit.docker.rule;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -12,12 +12,12 @@ import org.junit.rules.RuleChain;
 public class DockerRuleLinkDynamicTest {
 
     private static DockerRule dbRule = DockerRule.builder()//
-            .imageName("alpine:3.4")//
+            .imageName("alpine:3.13.1")//
             .cmd("sh", "-c", "sleep 30")//
             .build();
 
     private static DockerRule web = DockerRule.builder()//
-            .imageName("alpine:3.4")//
+            .imageName("alpine:3.13.1")//
             .link(dbRule, "db")//
             .cmd("sh", "-c", "ping -w 1 db")//
             .build();

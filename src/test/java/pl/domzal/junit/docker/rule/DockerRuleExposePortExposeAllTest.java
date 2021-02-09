@@ -18,7 +18,7 @@ public class DockerRuleExposePortExposeAllTest {
 
     @ClassRule
     public static DockerRule testee = DockerRule.builder()//
-            .imageName("nginx:1.10.2")//
+            .imageName("nginx:1.19.6")//
             .build();
 
     private String nginxHome;

@@ -3,13 +3,12 @@ package pl.domzal.junit.docker.rule.wait;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.spotify.docker.client.shaded.org.apache.http.client.config.RequestConfig;
-import com.spotify.docker.client.shaded.org.apache.http.client.methods.CloseableHttpResponse;
-import com.spotify.docker.client.shaded.org.apache.http.client.methods.RequestBuilder;
-import com.spotify.docker.client.shaded.org.apache.http.impl.client.CloseableHttpClient;
-import com.spotify.docker.client.shaded.org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import com.spotify.docker.client.shaded.org.apache.http.impl.client.HttpClientBuilder;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+import org.glassfish.jersey.client.ClientProperties;
 
 /**
  * Check whether a given URL is available
@@ -87,20 +86,27 @@ public class HttpPingChecker implements StartConditionCheck {
     }
 
     private boolean ping() throws IOException {
-        RequestConfig requestConfig =
-                RequestConfig.custom()
-                        .setSocketTimeout(HTTP_PING_TIMEOUT)
-                        .setConnectTimeout(HTTP_PING_TIMEOUT)
-                        .setConnectionRequestTimeout(HTTP_PING_TIMEOUT)
-                        .build();
-        CloseableHttpClient httpClient = HttpClientBuilder.create()
-                .setDefaultRequestConfig(requestConfig)
-                .setRetryHandler(new DefaultHttpRequestRetryHandler(HTTP_CLIENT_RETRIES, false))
-                .build();
+        Client client = ClientBuilder.newClient();
         try {
-            CloseableHttpResponse response = httpClient.execute(RequestBuilder.create(method.toUpperCase()).setUri(url).build());
+            client.property(ClientProperties.CONNECT_TIMEOUT, HTTP_PING_TIMEOUT);
+            client.property(ClientProperties.READ_TIMEOUT, HTTP_PING_TIMEOUT);
+            WebTarget webTarget = client.target(url);
+            Response response = null;
+            int tries = HTTP_CLIENT_RETRIES;
+            while (true) {
+                try {
+                    response = webTarget.request().build(method.toUpperCase()).invoke();
+                    break;
+                } catch (ProcessingException e) {
+                    // ignore
+                }
+                if (tries <= 0) {
+                    return false;
+                }
+                tries--;
+            }
             try {
-                int responseCode = response.getStatusLine().getStatusCode();
+                int responseCode = response.getStatus();
                 if (responseCode == 501) {
                     throw new IllegalArgumentException("Invalid or not supported HTTP method '" + method.toUpperCase() + "' for checking " + url);
                 }
@@ -109,7 +115,7 @@ public class HttpPingChecker implements StartConditionCheck {
                 response.close();
             }
         } finally {
-            httpClient.close();
+            client.close();
         }
     }
 

@@ -10,7 +10,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.spotify.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.exceptions.DockerException;
 
 @Category(test.category.Stable.class)
 public class DockerRuleRestartPolicyTest {
@@ -19,7 +19,7 @@ public class DockerRuleRestartPolicyTest {
 
     @Rule
     public DockerRule testee = DockerRule.builder()
-            .imageName("alpine:3.4")
+            .imageName("alpine:3.13.1")
             .restartPolicy(RestartPolicy.always())
             .cmd("sh", "-c", "sleep 2")
             .build();

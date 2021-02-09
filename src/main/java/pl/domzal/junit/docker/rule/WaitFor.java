@@ -1,12 +1,11 @@
 package pl.domzal.junit.docker.rule;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.spotify.docker.client.shaded.com.google.common.collect.Lists;
-import com.spotify.docker.client.shaded.com.google.common.primitives.Ints;
 
 import pl.domzal.junit.docker.rule.wait.HttpPingChecker;
 import pl.domzal.junit.docker.rule.wait.LogChecker;
@@ -46,7 +45,7 @@ public class WaitFor {
      * @param message
      */
     public static StartCondition logMessageSequence(String... message) {
-        return logMessageSequence(Lists.newArrayList(message));
+        return logMessageSequence(new ArrayList<String>(Arrays.asList(message)));
     }
 
     public static StartCondition logMessageSequence(final List<String> messageSequence) {
@@ -85,14 +84,18 @@ public class WaitFor {
      * @param internalTcpPorts TCP port (or ports) to scan (internal, MUST be exposed for wait to work).
      */
     public static StartCondition tcpPort(final int... internalTcpPorts) {
-        return tcpPort(Ints.asList(internalTcpPorts));
+        List<Integer> ports = new ArrayList<>(internalTcpPorts.length);
+        for (int port: internalTcpPorts) {
+            ports.add(port);
+        }
+        return tcpPort(ports);
     }
 
     private static StartCondition tcpPort(final List<Integer> internalPorts) {
         return new StartCondition() {
             @Override
             public StartConditionCheck build(DockerRule currentRule) {
-                List<Integer> externalPorts = Lists.newArrayList();
+                List<Integer> externalPorts = new ArrayList<>();
                 for (Integer intPort : internalPorts) {
                     externalPorts.add(currentRule.findExternalPort(intPort));
                 }

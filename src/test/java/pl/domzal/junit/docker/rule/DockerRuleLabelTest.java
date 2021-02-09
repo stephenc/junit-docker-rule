@@ -11,7 +11,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.spotify.docker.client.messages.ContainerInfo;
+import org.mandas.docker.client.messages.ContainerInfo;
 
 @Category(test.category.Stable.class)
 public class DockerRuleLabelTest {
@@ -25,7 +25,7 @@ public class DockerRuleLabelTest {
     @Test
     public void shouldLabelContainerSingleLabel() throws Throwable {
         DockerRule testee = DockerRule.builder()//
-                .imageName("busybox:1.25.1")//
+                .imageName("busybox:1.33.0")//
                 .cmd("sh", "-c", "echo 01stdout; sleep 100")//
                 .addLabel("label-key", "label-value")
                 .build();

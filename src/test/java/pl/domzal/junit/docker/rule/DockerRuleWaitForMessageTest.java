@@ -1,7 +1,7 @@
 package pl.domzal.junit.docker.rule;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.concurrent.TimeoutException;
 
@@ -13,10 +13,10 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerClient.LogsParam;
-import com.spotify.docker.client.LogStream;
-import com.spotify.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.DockerClient.LogsParam;
+import org.mandas.docker.client.LogStream;
+import org.mandas.docker.client.exceptions.DockerException;
 
 @Category(test.category.Stable.class)
 public class DockerRuleWaitForMessageTest {
@@ -25,7 +25,7 @@ public class DockerRuleWaitForMessageTest {
 
     @Rule
     public DockerRule testee = DockerRule.builder()//
-            .imageName("busybox:1.25.1")//
+            .imageName("busybox:1.33.0")//
             .cmd("sh", "-c", "for i in 01 02 03 04 05 06 07 08 09 10; do (echo $i; sleep 1); done")//
             .waitFor(WaitFor.logMessage("05"))
             .build();

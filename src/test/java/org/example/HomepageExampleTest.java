@@ -1,7 +1,7 @@
 package org.example;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 
@@ -15,7 +15,7 @@ public class HomepageExampleTest {
 
     @Rule
     public DockerRule container = DockerRule.builder() //
-            .imageName("nginx:1.10.2") //
+            .imageName("nginx:1.19.6") //
             .build();
 
     @Test

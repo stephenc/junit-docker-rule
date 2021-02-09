@@ -1,10 +1,10 @@
 package pl.domzal.junit.docker.rule;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerClient.LogsParam;
-import com.spotify.docker.client.LogStream;
-import com.spotify.docker.client.exceptions.DockerException;
-import com.spotify.docker.client.messages.HostConfig;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.DockerClient.LogsParam;
+import org.mandas.docker.client.LogStream;
+import org.mandas.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.messages.HostConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @Category(test.category.Stable.class)
 public class DockerRuleExtraUlimitsTest {
@@ -24,9 +24,9 @@ public class DockerRuleExtraUlimitsTest {
 
     @Rule
     public DockerRule testee = DockerRule.builder()//
-            .imageName("busybox:1.25.1")//
-            .ulimit(HostConfig.Ulimit.create("nofile", (long) 262144, (long) 262144))
-            .cmd("sh", "-c", "ulimit -a | grep descriptors")//
+            .imageName("busybox:1.33.0")//
+            .ulimit(HostConfig.Ulimit.builder().name("nofile").hard(262144L).soft(262144L).build())
+            .cmd("sh", "-c", "ulimit -a | grep \"open files\"")//
             .build();
 
     @Test

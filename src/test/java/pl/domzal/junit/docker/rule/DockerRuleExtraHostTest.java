@@ -1,7 +1,7 @@
 package pl.domzal.junit.docker.rule;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 
@@ -12,10 +12,10 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerClient.LogsParam;
-import com.spotify.docker.client.LogStream;
-import com.spotify.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.DockerClient.LogsParam;
+import org.mandas.docker.client.LogStream;
+import org.mandas.docker.client.exceptions.DockerException;
 
 @Category(test.category.Stable.class)
 public class DockerRuleExtraHostTest {
@@ -24,7 +24,7 @@ public class DockerRuleExtraHostTest {
 
     @Rule
     public DockerRule testee = DockerRule.builder()//
-            .imageName("busybox:1.25.1")//
+            .imageName("busybox:1.33.0")//
             .extraHosts("extrahost:1.2.3.4")
             .cmd("sh", "-c", "cat /etc/hosts | grep extrahost")//
             .build();

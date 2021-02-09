@@ -1,7 +1,7 @@
 package pl.domzal.junit.docker.rule;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -22,7 +22,7 @@ public class DockerRuleLogsTest {
     @Test
     public void shouldWriteStdout() throws Throwable {
         DockerRule testee = DockerRule.builder()//
-                .imageName("busybox:1.25.1")//
+                .imageName("busybox:1.33.0")//
                 .cmd("sh", "-c", "echo 01stdout; sleep 1")//
                 .stdoutWriter(outWriter)
                 .stderrWriter(errWriter)
@@ -40,7 +40,7 @@ public class DockerRuleLogsTest {
     @Test
     public void shouldWriteStderr() throws Throwable {
         DockerRule testee = DockerRule.builder()//
-                .imageName("busybox:1.25.1")//
+                .imageName("busybox:1.33.0")//
                 .cmd("sh", "-c", ">&2 echo 02stderr; sleep 1")//
                 .stdoutWriter(outWriter)
                 .stderrWriter(errWriter)

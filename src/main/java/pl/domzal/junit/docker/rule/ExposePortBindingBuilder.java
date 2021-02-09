@@ -1,5 +1,8 @@
 package pl.domzal.junit.docker.rule;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,9 +11,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.spotify.docker.client.shaded.com.google.common.collect.Lists;
-import com.spotify.docker.client.messages.HostConfig;
-import com.spotify.docker.client.messages.PortBinding;
+import org.mandas.docker.client.messages.HostConfig;
+import org.mandas.docker.client.messages.PortBinding;
 
 import pl.domzal.junit.docker.rule.ex.InvalidPortDefinition;
 
@@ -45,7 +47,7 @@ class ExposePortBindingBuilder {
         if (bindings.containsKey(containerBind)) {
             bindings.get(containerBind).add(hostBind);
         } else {
-            bindings.put(containerBind, Lists.newArrayList(hostBind));
+            bindings.put(containerBind, new ArrayList<>(Collections.singletonList(hostBind)));
         }
     }
 

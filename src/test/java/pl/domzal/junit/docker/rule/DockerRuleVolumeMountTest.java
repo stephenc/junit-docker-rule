@@ -1,6 +1,7 @@
 package pl.domzal.junit.docker.rule;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.Writer;
 
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.io.IOUtils;
@@ -26,9 +28,9 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.DockerClient.LogsParam;
-import com.spotify.docker.client.LogStream;
+import org.mandas.docker.client.DockerClient;
+import org.mandas.docker.client.DockerClient.LogsParam;
+import org.mandas.docker.client.LogStream;
 
 import pl.domzal.junit.docker.rule.ex.InvalidVolumeFrom;
 
@@ -101,7 +103,7 @@ public class DockerRuleVolumeMountTest {
             File nonexistingHostDir = testDir.toPath().resolve("nonexisting").toFile();
             log.debug("mountFrom: "+nonexistingHostDir.getAbsolutePath());
             testee = DockerRule.builder()//
-                    .imageName("busybox:1.25.1")//
+                    .imageName("busybox:1.33.0")//
                     .mountFrom(nonexistingHostDir).to("/somedir", "ro")//
                     .build();
             fail("should fail with "+InvalidVolumeFrom.class.getSimpleName());
@@ -116,7 +118,7 @@ public class DockerRuleVolumeMountTest {
         if (SystemUtils.IS_OS_MAC_OSX || SystemUtils.IS_OS_WINDOWS) {
             try {
                 testee = DockerRule.builder()//
-                        .imageName("busybox:1.25.1")//
+                        .imageName("busybox:1.33.0")//
                         .mountFrom("/somehostdir").to("/somedir", "ro")//
                         .build();
                 fail("should fail with "+InvalidVolumeFrom.class.getSimpleName());
@@ -129,7 +131,7 @@ public class DockerRuleVolumeMountTest {
     @Test
     public void shouldReadMountFromUnixStyle() throws Throwable {
         testee = DockerRule.builder()//
-                .imageName("busybox:1.25.1")//
+                .imageName("busybox:1.33.0")//
                 .mountFrom(testDirPath).to("/somedir", "ro")//
                 .cmd("sh", "-c", "cat /somedir/"+testFilename)//
                 .build();
@@ -147,7 +149,7 @@ public class DockerRuleVolumeMountTest {
     @Test
     public void shouldReadMountFromJavaFile() throws Throwable {
         testee = DockerRule.builder()//
-                .imageName("busybox:1.25.1")//
+                .imageName("busybox:1.33.0")//
                 .mountFrom(testDir).to("/somedir", "ro")//
                 .cmd("sh", "-c", "cat /somedir/"+testFilename)//
                 .build();
@@ -165,7 +167,7 @@ public class DockerRuleVolumeMountTest {
     @Test
     public void shouldWriteRwMountedFile() throws Throwable {
         testee = DockerRule.builder()//
-                .imageName("busybox:1.25.1")//
+                .imageName("busybox:1.33.0")//
                 .mountFrom(testDirPath).to("/somedir")//
                 .cmd("sh", "-c", "echo "+testFileContentChanged+" > /somedir/"+testFilename)//
                 .build();
@@ -178,7 +180,7 @@ public class DockerRuleVolumeMountTest {
         String stdout = StringUtils.trim(stdoutLog.readFully());
         log.info("log:\n{}", stdout);
         try (InputStream is = new FileInputStream(testFile)) {
-            String fileContent = StringUtils.join(IOUtils.readLines(is), " ");
+            String fileContent = StringUtils.join(IOUtils.readLines(is, Charset.defaultCharset()), " ");
             assertThat(fileContent, containsString(testFileContentChanged));
         }
     }
@@ -186,7 +188,7 @@ public class DockerRuleVolumeMountTest {
     @Test
     public void shouldNotWriteRoMountedFile() throws Throwable {
         testee = DockerRule.builder()//
-                .imageName("busybox:1.25.1")//
+                .imageName("busybox:1.33.0")//
                 .mountFrom(testDirPath).to("/somedir", "ro")//
                 .cmd("sh", "-c", "echo "+testFileContentChanged+" > /somedir/"+testFilename)//
                 .build();
@@ -199,7 +201,7 @@ public class DockerRuleVolumeMountTest {
         String stdout = StringUtils.trim(stdoutLog.readFully());
         log.info("log:\n{}", stdout);
         try (InputStream is = new FileInputStream(testFile)) {
-            String fileContent = StringUtils.join(IOUtils.readLines(is), " ");
+            String fileContent = StringUtils.join(IOUtils.readLines(is, Charset.defaultCharset()), " ");
             assertThat(fileContent, containsString(testFileContent));
         }
     }

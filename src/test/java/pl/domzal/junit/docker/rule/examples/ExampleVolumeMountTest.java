@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.commons.io.FileUtils;
@@ -54,12 +55,12 @@ public class ExampleVolumeMountTest {
     @BeforeClass
     public static void setup() throws IOException {
         File testFile = tempFolder.newFile("somefile");
-        FileUtils.write(testFile, "1234567890");
+        FileUtils.write(testFile, "1234567890", StandardCharsets.US_ASCII);
     }
 
     @Rule
     public DockerRule testee = DockerRule.builder()
-            .imageName("busybox:1.25.1")
+            .imageName("busybox:1.33.0")
             // mounting requires specifying file and target path
             .mountFrom(tempFolder.getRoot()).to("/somedir", "ro")
             .cmd("sh", "-c", "cat /somedir/somefile")

@@ -9,7 +9,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.spotify.docker.client.messages.PortBinding;
+import org.mandas.docker.client.messages.PortBinding;
 
 import pl.domzal.junit.docker.rule.ex.InvalidPortDefinition;
 

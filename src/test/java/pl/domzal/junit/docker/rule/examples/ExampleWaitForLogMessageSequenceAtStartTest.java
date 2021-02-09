@@ -1,7 +1,7 @@
 package pl.domzal.junit.docker.rule.examples;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.concurrent.TimeoutException;
 
@@ -11,7 +11,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.spotify.docker.client.exceptions.DockerException;
+import org.mandas.docker.client.exceptions.DockerException;
 
 import pl.domzal.junit.docker.rule.DockerRule;
 import pl.domzal.junit.docker.rule.WaitFor;
@@ -26,7 +26,7 @@ public class ExampleWaitForLogMessageSequenceAtStartTest {
 
     @Rule
     public DockerRule testee = DockerRule.builder()//
-            .imageName("alpine:3.4")//
+            .imageName("alpine:3.13.1")//
             .cmd("sh", "-c", "for i in 'this is' 'some starting sequence' 'and now' 'it is' 'finished' 'no need' 'to wait' more; do (echo $i; sleep 1); done")//
             .waitFor(WaitFor.logMessageSequence("some starting sequence", "finished"))
             .build();

@@ -1,7 +1,7 @@
 package pl.domzal.junit.docker.rule;
 
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.UUID;
 
@@ -17,13 +17,13 @@ public class DockerRuleLinkTest {
     private static String DB_NAME = StringUtils.right(UUID.randomUUID().toString(), 8).toUpperCase();
 
     private static DockerRule db = DockerRule.builder()//
-            .imageName("busybox:1.25.1")//
+            .imageName("busybox:1.33.0")//
             .name(DB_NAME)//
             .cmd("sh", "-c", "sleep 30")//
             .build();
 
     private static DockerRule web = DockerRule.builder()//
-            .imageName("busybox:1.25.1")//
+            .imageName("busybox:1.33.0")//
             .name("web")//
             .link(DB_NAME)//
             .cmd("sh", "-c", "env")//

@@ -1,5 +1,49 @@
 # changelog #
 
+## 0.6.0 (2021-02-09) ##
+
+Changes:
+- Switch to [`org.mandas` fork of docker client](https://github.com/dmandalidis/docker-client) version 5.0.0
+- Updated test images to avoid breakage with dockerhub expiration policy
+- Java 8 required
+
+## 0.5.2 (2019-04-11) ##
+
+Changes:
+- Spotify docker client updated to version 8.16.0
+
+## 0.5.1 (2019-04-11) ##
+
+Changes:
+- Additional tidy-up on failed wait condition fixes
+
+## 0.5.0 (2019-04-11) ##
+
+Changes:
+- Spotify docker client updated to version 8.11.1.0
+- Added support for adding ulimits to HostConfig
+- Tidy up containers if wait condition fails
+- Fix tests on Mac/Windows
+
+## 0.4.4 (2018-03-29) ##
+
+Changes:
+- Allow tests to run on OS-X
+- Add ability to control the memory configuration of container
+
+## 0.4.3 (never released) ##
+
+## 0.4.2 (2018-02-28) ##
+
+Changes:
+- Fixed parent pom
+
+## 0.4.1 (2018-02-28) ##
+
+Changes:
+- Forked to `io.github.stephenc.docker` groupId
+- Switched to shaded version of docket client
+
 ## 0.4 (2018-02-15) ##
 
 Changes:
